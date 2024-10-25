@@ -1,0 +1,4 @@
+size: 3                  # Taille du puzzle NxN
+iterations: 1000         # Nombre d'itérations pour mélanger
+heuristic: "manhattan"   # Heuristique : manhattan, hamming, ou linear_conflict
+file: "puzzle.txt"       # Nom du fichier contenant un N-puzzle

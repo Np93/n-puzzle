@@ -1,0 +1,1 @@
+# Fonctions utilitaires diverses (par exemple, affichage du puzzle)
