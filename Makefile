@@ -17,10 +17,9 @@ clean:
 	@${RM} .mypy_cache
 	@${RM} .pytest_cache
 
-# Supprime toutes les installations de dépendances Poetry et les caches
+# Supprime toutes les installations de dépendances Poetry et les caches, peut ajputer @${RM} poetry.lock
 fclean: clean
-	@${RM} poetry.lock
-	@poetry cache clear --all pypi  # Vide le cache Poetry (optionnel)
+	@poetry cache clear --all pypi
 
 # Nettoie et réinstalle les dépendances, puis exécute le programme
 re: fclean
