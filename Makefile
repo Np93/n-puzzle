@@ -9,7 +9,7 @@ all: ${NAME}
 
 # Exécute le programme principal sans réinstaller les dépendances
 ${NAME}:
-	@poetry run python src/main.py
+	@poetry run python3 src/main.py
 
 # Nettoyage des fichiers temporaires (caches Python)
 clean:

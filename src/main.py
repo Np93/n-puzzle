@@ -2,9 +2,9 @@
 import yaml
 import sys
 from pathlib import Path
-from src.puzzle_generator import generate_solvable_puzzle
-from src.solver import solve_puzzle
-from src.parser import parse_puzzle
+from puzzle_generator import generate_puzzle
+# from src.solver import solve_puzzle
+# from src.parser import parse_puzzle
 
 def load_config(config_path="config.yaml"):
     try:
@@ -22,6 +22,11 @@ def main():
     iterations = config.get("iterations", 10)
     heuristic = config.get("heuristic", "manhattan")
     puzzle_file = config.get("file")
+    solvable = config.get("solvable", True)
+
+    if size < 3:
+        print("Can't generate and resolvate a puzzle with size lower than 2. It says so in the help. Dummy.")
+        return
 
     if puzzle_file:
         puzzle_file_path = Path("..") / puzzle_file
@@ -31,10 +36,11 @@ def main():
     # Chargement du puzzle
     if puzzle_file and Path(puzzle_file).is_file():
         print(f"Loading puzzle from {puzzle_file}")
-        puzzle = parse_puzzle(puzzle_file)
+        # puzzle = parse_puzzle(puzzle_file)
     else:
         print(f"Generating a random solvable puzzle of size {size} with {iterations} iterations.")
-        puzzle = generate_solvable_puzzle(size, iterations)
+        puzzle = generate_puzzle(size, iterations, solvable)
+        print(puzzle)
 
     # Affichage du puzzle initial
     print("Initial Puzzle State:")
