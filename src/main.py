@@ -3,8 +3,9 @@ import yaml
 import sys
 from pathlib import Path
 from puzzle_generator import generate_puzzle
-# from src.solver import solve_puzzle
-# from src.parser import parse_puzzle
+from solver import solve_puzzle
+from utils import display_puzzle
+from parser import parse_puzzle
 
 def load_config(config_path="config.yaml"):
     try:
@@ -36,11 +37,14 @@ def main():
     # Chargement du puzzle
     if puzzle_file and Path(puzzle_file).is_file():
         print(f"Loading puzzle from {puzzle_file}")
-        # puzzle = parse_puzzle(puzzle_file)
+        try:
+            puzzle, size = parse_puzzle(puzzle_file)
+        except ValueError as e:
+            print(f"Erreur lors du parsing du fichier : {e}")
+            sys.exit(1)
     else:
         print(f"Generating a random solvable puzzle of size {size} with {iterations} iterations.")
         puzzle = generate_puzzle(size, iterations, solvable)
-        print(puzzle)
 
     # Affichage du puzzle initial
     print("Initial Puzzle State:")
