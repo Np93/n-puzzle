@@ -1,5 +1,5 @@
-size: 3                  # Taille du puzzle NxN
-iterations: 10           # Nombre d'itérations pour mélanger
-heuristic: "manhattan"   # Heuristique : manhattan, hamming, ou linear_conflict
+size: 4                  # Taille du puzzle NxN
+iterations: 100         # Nombre d'itérations pour mélanger
+heuristic: "manhattan_conflict"   # Heuristique : manhattan, hamming, ou linear_conflict, manhattan_conflict, dynamic_misplaced
 file: "puzzle.txt"       # Nom du fichier contenant un N-puzzle si inexitant le cree automatiquement
 solvable: true           # true pour un puzzle résolvable, false pour non résolvable

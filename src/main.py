@@ -2,7 +2,7 @@
 import yaml
 import sys
 from pathlib import Path
-from puzzle_generator import generate_puzzle
+from puzzle_generator import generate_puzzle, count_inversions
 from solver import solve_puzzle
 from utils import display_puzzle
 from parser import parse_puzzle
@@ -50,9 +50,10 @@ def main():
     print("Initial Puzzle State:")
     display_puzzle(puzzle, size)
 
+    inversions = count_inversions(puzzle)
     # Résolution du puzzle
     print(f"Solving puzzle using {heuristic} heuristic...")
-    solution = solve_puzzle(puzzle, size, heuristic)
+    solution = solve_puzzle(puzzle, size, heuristic, inversions)
 
     # Affichage des résultats
     if solution:
