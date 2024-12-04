@@ -1,11 +1,13 @@
 # Point d'entrée principal pour exécuter le programme
 import yaml
 import sys
+import cProfile
 from pathlib import Path
 from puzzle_generator import generate_puzzle, count_inversions
 from solver import solve_puzzle
 from utils import display_puzzle
 from parser import parse_puzzle
+from test_goal_generator import generate_goal
 
 def load_config(config_path="config.yaml"):
     try:
@@ -49,10 +51,11 @@ def main():
     # Affichage du puzzle initial
     print("Initial Puzzle State:")
     display_puzzle(puzzle, size)
-
-    inversions = count_inversions(puzzle)
+    tmp = generate_goal(size)
+    inversions = count_inversions(puzzle, tmp)
     # Résolution du puzzle
     print(f"Solving puzzle using {heuristic} heuristic...")
+    cProfile.runctx('solve_puzzle(puzzle, size, heuristic, inversions)', globals(), locals())
     solution = solve_puzzle(puzzle, size, heuristic, inversions)
 
     # Affichage des résultats
@@ -66,6 +69,7 @@ def main():
         print(f"Maximum states in memory: {solution['max_states_in_memory']}")
     else:
         print("No solution found.")
+    sys.exit()
 
 if __name__ == "__main__":
     main()
