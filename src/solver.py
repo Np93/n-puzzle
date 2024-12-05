@@ -4,8 +4,8 @@ import sys
 
 import cProfile
 import inspect
-from typing import List, Callable, Dict, Any
-from heuristics import manhattan_distance, linear_conflict, dynamic_misplaced_heuristic, hamming_distance, manhattan_metric, hamming_metric, linear_conflict_distance
+from typing import List, Callable, Dict,Union, Set, Any, Tuple
+from heuristics import manhattan_distance, dynamic_misplaced_heuristic, hamming_distance, manhattan_metric, hamming_metric, linear_conflict_distance
 from heuristics_util import get_and_filter_line, linear_conflict_on_multiple_lines
 from parser import is_solvable
 from utils import display_puzzle
@@ -22,29 +22,59 @@ class PuzzleState:
 		self.col_goal_indices = precompute_goal_indices(self.goal_positions, is_row=False)
 
 
-# Implementation d'optimisation
-def precompute_goal_positions(goal, size):
+def precompute_goal_positions(goal: List[int], size: int)-> Dict[int, tuple[int, int]]:
+	"""
+	Precomputes the positions of tiles in the goal state.
+
+    Maps each tile value to its (column, row) position in the goal state grid.
+
+    goal: A list of integers representing the tiles in the goal state.
+    size: The dimension of the grid (e.g., 4 for a 4x4 puzzle).
+    return: A dictionary where keys are tile values and values are tuples (column, row) representing their positions.
+	"""
 	goal_positions = {}
 	for i, tile in enumerate(goal):
 		goal_positions[tile] = (i % size, i // size)
 	return goal_positions
 
-# at tester ATTN set is not preserving the order of the goal
-def	precompute_goal_columns(goal, size):
+
+def	precompute_goal_columns(goal: List[int], size: int)->Dict[int, Dict[str, Union[List[int], Set[int]]]]:
+	"""
+    Precomputes the columns of the goal state and organizes them into a structured format.
+
+    For each column index, creates a dictionary containing:
+    - 'values': A list of tile values in the column.
+    - 'set': A set of unique tile values in the column.
+
+    goal: A list of integers representing the tiles in the goal state.
+    size: The dimension of the grid (e.g., 4 for a 4x4 puzzle).
+    return: A dictionary where keys are column indices, and values are dictionaries with 'values' and 'set' of tile values.
+	"""
 	goal_columns = {}
 	for index in range(size):
 		column = [goal[index + j * size] for j in range(size)]
 		goal_columns[index] = {'values': column, 'set': set(column)}
 	return goal_columns
 
-def precompute_goal_rows(goal, size):
+def precompute_goal_rows(goal: List[int], size: int)->Dict[int, Dict[str, Union[List[int], Set[int]]]]:
+	"""
+    Precomputes the rows of the goal state and organizes them into a structured format.
+
+    For each column index, creates a dictionary containing:
+    - 'values': A list of tile values in the column.
+    - 'set': A set of unique tile values in the column.
+
+    goal: A list of integers representing the tiles in the goal state.
+    size: The dimension of the grid (e.g., 5 for a 5x5 puzzle).
+    return: A dictionary where keys are row indices, and values are dictionaries with 'values' and 'set' of tile values.
+	"""
 	goal_rows = {}
 	for index in range(size):
 		row = [goal[j + index * size] for j in range(size)]
 		goal_rows[index]  = {'values': row, 'set': set(row)}
 	return goal_rows
 
-def precompute_goal_indices(goal_positions, is_row=True):
+def precompute_goal_indices(goal_positions:Dict[int, tuple[int, int]], is_row=True):
 	"""
 	Precompute goal indices for rows or columns.
 	:param goal_positions: Dictionary mapping tiles to their goal positions.
@@ -54,7 +84,7 @@ def precompute_goal_indices(goal_positions, is_row=True):
 	index_type = 0 if is_row else 1
 	return {tile: pos[index_type] for tile, pos in goal_positions.items()}
 
-def precompute_manhattan_dictionnary(goal_positions, size):
+""" def precompute_manhattan_dictionnary(goal_positions, size):
 	manhattan_dictionnary = {}
 	for tile in range(size * size):
 		tile_distance = {}
@@ -64,10 +94,10 @@ def precompute_manhattan_dictionnary(goal_positions, size):
 			distance = abs(goal_x - tile_x) + abs(goal_y - tile_y)
 			tile_distance[position]= distance
 		manhattan_dictionnary[tile]= tile_distance
-	return manhattan_dictionnary
+	return manhattan_dictionnary """
 
 # generalisation
-def precompute_distance_dictionary(goal_positions, size, distance_func):
+def precompute_distance_dictionary(goal_positions: Dict[int, tuple[int, int]], size: int, distance_func) -> Dict[int, Dict[int, int]]:
 	"""
 	Precomputes heuristic distances for a given heuristic function.
 
@@ -78,9 +108,9 @@ def precompute_distance_dictionary(goal_positions, size, distance_func):
 
 	Returns:
 		dict: A nested dictionary with precomputed distances.
-			  Outer key: Tile value
-			  Inner key: Current position
-			  Value: Distance from the current position to the tile's goal position
+			Outer key: Tile value
+			Inner key: Current position
+			Value: Distance from the current position to the tile's goal position
 	"""
 	distance_dictionary = {}
 	for tile in range(size * size):
@@ -93,8 +123,8 @@ def precompute_distance_dictionary(goal_positions, size, distance_func):
 		distance_dictionary[tile] = tile_distance
 	return distance_dictionary
 
-
-def get_new_blank_position(zero_position, move, size):
+# has been inlined
+""" def get_new_blank_position(zero_position, move, size):
 	if move == 'left':
 		return zero_position - 1
 	elif move == 'right':
@@ -102,9 +132,9 @@ def get_new_blank_position(zero_position, move, size):
 	elif move == 'up':
 		return zero_position - size
 	elif move == 'down':
-		return zero_position + size
+		return zero_position + size """
 
-def get_moved_tile(puzzle, zero_position, move, size):
+""" def get_moved_tile(puzzle, zero_position, move, size):
 	# Determine the new position of the blank tile after the move
 	if move == "left":
 		new_zero_position = zero_position - 1
@@ -117,16 +147,20 @@ def get_moved_tile(puzzle, zero_position, move, size):
 
 	# The tile at the new zero position is the one that will move to the original zero position
 	moved_tile = puzzle[new_zero_position]
-	return moved_tile, new_zero_position
+	return moved_tile, new_zero_position """
 
 
-def update_Manhattan_distance(last_h, zero_position, target_position, moved_tile, manhattan_precomputed):
+def update_Manhattan_distance(last_h: int, zero_position: int, target_position: int, moved_tile:int, manhattan_precomputed: Dict[int, Dict[int, int]])-> int:
 	"""
 	Update the Manhattan distance after moving a tile to the zero position.
 	last_h: the Manhattan distance of the last state
 	zero_position: the position of the zero tile before the move
 	target_position: the new position of the zero tile after the move
-	tile: the tile that moved to the zero position
+	moved_tile: the tile that moved to the zero position
+	manhattan_precomputed (Dict[int, Dict[int, int]]): Precomputed Manhattan distances
+        where the outer key is the tile value, the inner key is the position, 
+		and the value is the Manhattan distance to the tile's goal position.
+	return: int: The updated Manhattan distance after the move. 	
 	"""
 
 	last_h -= manhattan_precomputed[moved_tile][target_position]
@@ -134,19 +168,17 @@ def update_Manhattan_distance(last_h, zero_position, target_position, moved_tile
 
 	return last_h
 
-# fin implementation optimisation
-# not done
-def combined_heuristic(puzzle, goal, size):
-	return manhattan_distance(puzzle, goal, size) + linear_conflict(puzzle, goal, size)
 
-def get_heuristic_function(heuristic_name):
+# it is the standard linear conflict !
+""" def combined_heuristic(puzzle, goal, size):
+	return manhattan_distance(puzzle, goal, size) + linear_conflict(puzzle, goal, size) """
+
+def get_heuristic_function(heuristic_name: str):
 	"""
 	Renvoie la fonction heuristique en fonction du nom spécifié.
 	"""
 	if heuristic_name == "manhattan":
 		return manhattan_distance
-	elif heuristic_name == "manhattan_conflict":
-		return combined_heuristic
 	elif heuristic_name == "dynamic_misplaced":
 		return dynamic_misplaced_heuristic #a voir ?
 	elif heuristic_name == "hamming":
@@ -191,7 +223,27 @@ def solve_puzzle(puzzle, size, heuristic_name, inversions):
 		return ida_star(puzzle, goal, size, heuristic_func) """
 
 
-def get_neighbors(puzzle, size, zero_index, last_move=None):
+def get_neighbors(puzzle: List[int], size: int, zero_index: int, last_move: str=None) -> List[Tuple[int, int]]:
+	"""
+    Generate a list of possible neighbor states for the given puzzle by moving the blank tile (0).
+    
+    Each neighbor is represented by a new puzzle configuration and the direction of the move made to 
+    reach that configuration.
+
+    Args:
+        puzzle (List[int]): The current state of the puzzle represented as a flat list of integers.
+        Each element corresponds to a tile, with 0 representing the blank tile.
+        size (int): The size of the puzzle (e.g., 3 for a 3x3 puzzle).
+        zero_index (int): The index of the blank tile (0) in the puzzle.
+        last_move (str, optional): The direction of the last move made ("up", "down", "left", "right").
+            This helps prevent reversing the last move (default is None).
+
+    Returns:
+        List[Tuple[List[int], str]]: A list of tuples, where each tuple contains:
+            - A new puzzle state (List[int]) after moving the blank tile.
+            - A string representing the direction of the move made to reach that state ("up", "down", "left", or "right").
+    
+    """
 	neighbors = []
 	x, y = zero_index % size, zero_index // size
 
@@ -232,7 +284,7 @@ def a_star(puzzle: List[int], goal: List[int], size: int,heuristic_func: Callabl
 	goal_rows_computed = precompute_goal_rows(goal, size)
 	manhattan_precomputed = precompute_distance_dictionary(goal_positions, size, manhattan_metric)
 	hamming_precomputed = precompute_distance_dictionary(goal_positions, size, hamming_metric)
-
+	#print(f"man precomputed {type(manhattan_precomputed)}:{manhattan_precomputed}")
 
 	open_set = []
 	visited = set()
