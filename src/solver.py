@@ -188,7 +188,7 @@ def get_heuristic_function(heuristic_name: str):
 	else:
 		raise ValueError("Heuristic not supported")
 
-def solve_puzzle(puzzle, size, heuristic_name, inversions):
+def solve_puzzle_old(puzzle, size, heuristic_name, inversions):
 	"""
 	Sélectionne la meilleure stratégie de résolution en fonction du nombre d'inversions.
 	- puzzle : état initial du puzzle sous forme de liste
@@ -221,6 +221,38 @@ def solve_puzzle(puzzle, size, heuristic_name, inversions):
 	else:
 		print("Utilisation de IDA* pour de grandes inversions")
 		return ida_star(puzzle, goal, size, heuristic_func) """
+
+def solve_puzzle(algorithm, puzzle, size, heuristic_name, inversions):
+	"""
+	Sélectionne la meilleure stratégie de résolution en fonction du nombre d'inversions.
+	- algorithm: le choix algorithmique (A-star, greedy ou IDA)
+	- puzzle : état initial du puzzle sous forme de liste
+	- size : taille du puzzle
+	- heuristic_name : nom de l'heuristique à utiliser
+	- inversions : nombre d'inversions dans le puzzle
+	"""
+	goal = generate_goal(size)
+
+
+	# Vérification de la solvabilité
+	if not is_solvable(puzzle, size, goal): #modif ici
+		print("Le puzzle n'est pas résolvable.")
+		return None
+
+	# Choix de l'heuristique
+	heuristic_func = get_heuristic_function(heuristic_name)
+
+	# Choix de la stratégie en fonction des inversions
+	if inversions < 50000:
+		if algorithm == "A-star":
+			return a_star(puzzle, goal, size, heuristic_func)
+		elif algorithm == "greedy":
+			return greedy_search(puzzle, goal, size, heuristic_func)
+		elif algorithm == "IDA":
+			return ida_star(puzzle, goal, size, heuristic_func)
+		else:
+			raise NotImplementedError(f"Algorithm {algorithm} is not implemented.")
+
 
 
 def get_neighbors(puzzle: List[int], size: int, zero_index: int, last_move: str=None) -> List[Tuple[int, int]]:
@@ -272,8 +304,9 @@ def a_star(puzzle: List[int], goal: List[int], size: int,heuristic_func: Callabl
 	goal: a list of int (in flattened notation) representing the final state
 	heuristic_func : a function for computing the heuristic cost
 	"""
-
+	print("A* search: Goal state\n")
 	display_puzzle(goal, size)
+	print("A* search: Initial state\n")
 	display_puzzle(puzzle, size)
 
 	column_indices = [[k * size + j for k in range(size)] for j in range(size)]
@@ -425,7 +458,9 @@ def greedy_search(puzzle: List[int], goal: List[int], size: int,heuristic_func: 
 	goal: a list of int (in flattened notation) representing the final state
 	heuristic_func : a function for computing the heuristic cost
 	"""
+	print("Greedy search: Goal state\n")
 	display_puzzle(goal, size)
+	print("Greedy search: Initial state\n")
 	display_puzzle(puzzle, size)
 
 	column_indices = [[k * size + j for k in range(size)] for j in range(size)]
@@ -597,6 +632,12 @@ def greedy_search(puzzle: List[int], goal: List[int], size: int,heuristic_func: 
 
 def ida_star(puzzle: List[int], goal: List[int], size: int,heuristic_func: Callable[[List[int], Dict[int, Dict[int, int]], int], int]) -> List[List[int]]:
 	state = PuzzleState(puzzle, goal, size)
+
+	print("IDA search: Goal state\n")
+	display_puzzle(goal, size)
+	print("IDA search: Initial state\n")
+	display_puzzle(puzzle, size)
+
 	#precomputing everything to be sent to dfs
 	goal_positions = precompute_goal_positions(goal, size)
 	manhattan_precomputed = precompute_distance_dictionary(goal_positions, size, manhattan_metric)

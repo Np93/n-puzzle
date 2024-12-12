@@ -59,7 +59,7 @@ class TXT_Checker:
         Enlèle les lignes vides (dues principallement à des lignes de commentaires)
         """
         for line_number in range(len(self.cleanedLines) - 1, -1, -1):
-            print(line_number, self.cleanedLines[line_number])
+            #print(line_number, self.cleanedLines[line_number])
             if self.cleanedLines[line_number] == '':
                 self.cleanedLines.pop(line_number)
 
@@ -88,11 +88,11 @@ class TXT_Checker:
         first_line = self.cleanedLines[0].strip()
         if first_line.isdigit():
             number = int(first_line)
-            print(f"The first line contains the integer: {number}")
+            #print(f"The first line contains the integer: {number}")
             self.puzzle_Size_N = number
         else:
             self.error_found = True
-            print("Error: The first line does not contain a single integer.")
+            #print("Error: The first line does not contain a single integer.")
             return False
         
         expected_value = set(range(number * number))

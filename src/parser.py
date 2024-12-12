@@ -70,8 +70,8 @@ def is_solvable(puzzle, size, goal):
     - size : taille du puzzle (par exemple, 3 pour 3x3)
     Retourne : True si le puzzle est résolvable, False sinon
     """
-    display_puzzle(puzzle, size)
-    display_puzzle(goal, size)
+   # display_puzzle(puzzle, size)
+   # display_puzzle(goal, size)
     goal_positions = {value: idx for idx, value in enumerate(goal)}
     
     # Map the current puzzle state to the order of the goal state
