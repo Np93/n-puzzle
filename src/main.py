@@ -39,19 +39,20 @@ def main():
 		puzzle_file_path = None
 
 	# Chargement du puzzle
-	puzzle_test = TXT_Checker(puzzle_file)
-	test = puzzle_test.is_Puzzle()
-	if test:
-		puzzle_test.save_clean_version(puzzle_file)
-		#print(f"le fichier {puzzle_file} est ok ? {test}")
-	#else :
 	if puzzle_file and Path(puzzle_file).is_file():
-		print(f"Loading puzzle from {puzzle_file}")
-		try:
-			puzzle, size = parse_puzzle(puzzle_file)
-		except ValueError as e:
-			print(f"Erreur lors du parsing du fichier : {e}")
-			sys.exit(1)
+		puzzle_test = TXT_Checker(puzzle_file)
+		test = puzzle_test.is_Puzzle()
+		if test:
+			puzzle_test.save_clean_version(puzzle_file)
+			#print(f"le fichier {puzzle_file} est ok ? {test}")
+		#else :
+		if puzzle_file and Path(puzzle_file).is_file():
+			print(f"Loading puzzle from {puzzle_file}")
+			try:
+				puzzle, size = parse_puzzle(puzzle_file)
+			except ValueError as e:
+				print(f"Erreur lors du parsing du fichier : {e}")
+				sys.exit(1)
 	else:
 		print(f"Generating a random solvable puzzle of size {size} with {iterations} iterations.")
 		puzzle = generate_puzzle(size, iterations, solvable)
