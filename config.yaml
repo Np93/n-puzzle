@@ -1,6 +1,6 @@
-size: 3                     # Taille du puzzle NxN
-iterations: 100             # Nombre d'itérations pour mélanger
-heuristic: "manhattan"      # Heuristique : manhattan, hamming, ou linear_conflict, manhattan_conflict, dynamic_misplaced
-file:    test_solvable.txt  # Nom du fichier contenant un N-puzzle si inexitant le cree automatiquement
+size: 60                   # Taille du puzzle NxN
+iterations: 10       # Nombre d'itérations pour mélanger
+heuristic: "manhattan"      # Heuristique : manhattan, hamming, ou linear_conflict
+file:      # Nom du fichier contenant un N-puzzle si inexitant le cree automatiquement
 solvable: true              # true pour un puzzle résolvable, false pour non résolvable
-algorithm: "IDA"         # Algorithme : A-star, greedy ou IDA
+algorithm: "A-star"            # Algorithme : A-star, greedy ou IDA

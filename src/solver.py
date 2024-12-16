@@ -5,7 +5,7 @@ import sys
 import cProfile
 import inspect
 from typing import List, Callable, Dict,Union, Set, Any, Tuple
-from heuristics import manhattan_distance, dynamic_misplaced_heuristic, hamming_distance, manhattan_metric, hamming_metric, linear_conflict_distance
+from heuristics import manhattan_distance,  hamming_distance, manhattan_metric, hamming_metric, linear_conflict_distance
 from heuristics_util import get_and_filter_line, linear_conflict_on_multiple_lines
 from parser import is_solvable
 from utils import display_puzzle
@@ -20,7 +20,12 @@ class PuzzleState:
 		self.column_indices = [[k * size + j for k in range(size)] for j in range(size)]
 		self.row_goal_indices = precompute_goal_indices(self.goal_positions, is_row=True)
 		self.col_goal_indices = precompute_goal_indices(self.goal_positions, is_row=False)
-
+		self.goal_positions = precompute_goal_positions(goal, size)
+		self.manhattan_precomputed = precompute_distance_dictionary(self.goal_positions, size, manhattan_metric)
+		self.hamming_precomputed = precompute_distance_dictionary(self.goal_positions, size, hamming_metric)
+		
+		self.goal_columns_computed = precompute_goal_columns(goal, size)
+		self.goal_rows_computed = precompute_goal_rows(goal, size)
 
 def precompute_goal_positions(goal: List[int], size: int)-> Dict[int, tuple[int, int]]:
 	"""
@@ -84,19 +89,7 @@ def precompute_goal_indices(goal_positions:Dict[int, tuple[int, int]], is_row=Tr
 	index_type = 0 if is_row else 1
 	return {tile: pos[index_type] for tile, pos in goal_positions.items()}
 
-""" def precompute_manhattan_dictionnary(goal_positions, size):
-	manhattan_dictionnary = {}
-	for tile in range(size * size):
-		tile_distance = {}
-		goal_x, goal_y = goal_positions[tile]
-		for position in range(size * size):
-			tile_x, tile_y = position % size, position // size
-			distance = abs(goal_x - tile_x) + abs(goal_y - tile_y)
-			tile_distance[position]= distance
-		manhattan_dictionnary[tile]= tile_distance
-	return manhattan_dictionnary """
 
-# generalisation
 def precompute_distance_dictionary(goal_positions: Dict[int, tuple[int, int]], size: int, distance_func) -> Dict[int, Dict[int, int]]:
 	"""
 	Precomputes heuristic distances for a given heuristic function.
@@ -123,32 +116,6 @@ def precompute_distance_dictionary(goal_positions: Dict[int, tuple[int, int]], s
 		distance_dictionary[tile] = tile_distance
 	return distance_dictionary
 
-# has been inlined
-""" def get_new_blank_position(zero_position, move, size):
-	if move == 'left':
-		return zero_position - 1
-	elif move == 'right':
-		return zero_position + 1
-	elif move == 'up':
-		return zero_position - size
-	elif move == 'down':
-		return zero_position + size """
-
-""" def get_moved_tile(puzzle, zero_position, move, size):
-	# Determine the new position of the blank tile after the move
-	if move == "left":
-		new_zero_position = zero_position - 1
-	elif move == "right":
-		new_zero_position = zero_position + 1
-	elif move == "up":
-		new_zero_position = zero_position - size
-	elif move == "down":
-		new_zero_position = zero_position + size
-
-	# The tile at the new zero position is the one that will move to the original zero position
-	moved_tile = puzzle[new_zero_position]
-	return moved_tile, new_zero_position """
-
 
 def update_Manhattan_distance(last_h: int, zero_position: int, target_position: int, moved_tile:int, manhattan_precomputed: Dict[int, Dict[int, int]])-> int:
 	"""
@@ -169,58 +136,25 @@ def update_Manhattan_distance(last_h: int, zero_position: int, target_position: 
 	return last_h
 
 
-# it is the standard linear conflict !
-""" def combined_heuristic(puzzle, goal, size):
-	return manhattan_distance(puzzle, goal, size) + linear_conflict(puzzle, goal, size) """
 
 def get_heuristic_function(heuristic_name: str):
 	"""
 	Renvoie la fonction heuristique en fonction du nom spécifié.
 	"""
-	if heuristic_name == "manhattan":
-		return manhattan_distance
-	elif heuristic_name == "dynamic_misplaced":
-		return dynamic_misplaced_heuristic #a voir ?
-	elif heuristic_name == "hamming":
-		return hamming_distance
-	elif heuristic_name == "linear_conflict":
-		return linear_conflict_distance #modified
-	else:
-		raise ValueError("Heuristic not supported")
-
-def solve_puzzle_old(puzzle, size, heuristic_name, inversions):
-	"""
-	Sélectionne la meilleure stratégie de résolution en fonction du nombre d'inversions.
-	- puzzle : état initial du puzzle sous forme de liste
-	- size : taille du puzzle
-	- heuristic_name : nom de l'heuristique à utiliser
-	- inversions : nombre d'inversions dans le puzzle
-	"""
-	goal = generate_goal(size)
+	try:
+		if heuristic_name == "manhattan":
+			return manhattan_distance
+		elif heuristic_name == "hamming":
+			return hamming_distance
+		elif heuristic_name == "linear_conflict":
+			return linear_conflict_distance #modified
+		else:
+			raise ValueError("Heuristic not supported")
+	except ValueError as e:
+		print(f"Erreur : {e}")
+		sys.exit()
 
 
-	# Vérification de la solvabilité
-	if not is_solvable(puzzle, size, goal): #modif ici
-		print("Le puzzle n'est pas résolvable.")
-		return None
-
-	# Choix de l'heuristique
-	heuristic_func = get_heuristic_function(heuristic_name)
-
-	# Choix de la stratégie en fonction des inversions
-	if inversions < 50000:
-
-		#return greedy_search(puzzle, goal, size, heuristic_func)
-
-		return a_star(puzzle, goal, size, heuristic_func)
-		#return ida_star(puzzle, goal, size, heuristic_func)
-
-	""" elif 50 <= inversions <= 100:
-		print("Utilisation de la Recherche Gloutonne")
-		return greedy_search(puzzle, goal, size, heuristic_func)
-	else:
-		print("Utilisation de IDA* pour de grandes inversions")
-		return ida_star(puzzle, goal, size, heuristic_func) """
 
 def solve_puzzle(algorithm, puzzle, size, heuristic_name, inversions):
 	"""
@@ -243,7 +177,7 @@ def solve_puzzle(algorithm, puzzle, size, heuristic_name, inversions):
 	heuristic_func = get_heuristic_function(heuristic_name)
 
 	# Choix de la stratégie en fonction des inversions
-	if inversions < 50000:
+	try:
 		if algorithm == "A-star":
 			return a_star(puzzle, goal, size, heuristic_func)
 		elif algorithm == "greedy":
@@ -252,7 +186,9 @@ def solve_puzzle(algorithm, puzzle, size, heuristic_name, inversions):
 			return ida_star(puzzle, goal, size, heuristic_func)
 		else:
 			raise NotImplementedError(f"Algorithm {algorithm} is not implemented.")
-
+	except NotImplementedError as e:
+		print(f"Erreur : {e}")
+		sys.exit()
 
 
 def get_neighbors(puzzle: List[int], size: int, zero_index: int, last_move: str=None) -> List[Tuple[int, int]]:
@@ -317,8 +253,9 @@ def a_star(puzzle: List[int], goal: List[int], size: int,heuristic_func: Callabl
 	goal_rows_computed = precompute_goal_rows(goal, size)
 	manhattan_precomputed = precompute_distance_dictionary(goal_positions, size, manhattan_metric)
 	hamming_precomputed = precompute_distance_dictionary(goal_positions, size, hamming_metric)
-	#print(f"man precomputed {type(manhattan_precomputed)}:{manhattan_precomputed}")
-
+	print(f"column_indices {type(column_indices)}:{column_indices}")
+	
+	
 	open_set = []
 	visited = set()
 	came_from = {}
@@ -390,7 +327,7 @@ def a_star(puzzle: List[int], goal: List[int], size: int,heuristic_func: Callabl
 					new_heuristic += hamming_precomputed[tile_being_moved][zero_position]
 
 
-				elif heuristic_func is manhattan_distance or heuristic_func is linear_conflict_distance: #linear-conflict with manhattan
+				elif heuristic_func is manhattan_distance or heuristic_func is linear_conflict_distance:
 					tile_being_moved = current[new_empty_position]
 					new_tile_position = new_empty_position
 					new_heuristic = f - g
@@ -398,14 +335,14 @@ def a_star(puzzle: List[int], goal: List[int], size: int,heuristic_func: Callabl
 					new_heuristic += manhattan_precomputed[tile_being_moved][zero_position]
 
 
-					if heuristic_func is linear_conflict_distance: # optimisé
+					if heuristic_func is linear_conflict_distance:
 						tile_being_moved = current[new_empty_position]
 						new_tile_position = new_empty_position
 						new_heuristic = f - g
 						modified_column = []
 						modified_row = []
 
-						if move == 'left' or move == 'right': #is row False
+						if move == 'left' or move == 'right':
 							tmp = zero_position % size
 							modified_column.append(tmp)
 							if move == 'left':
@@ -485,15 +422,16 @@ def greedy_search(puzzle: List[int], goal: List[int], size: int,heuristic_func: 
 		initial_h = linear_conflict_distance(puzzle, goal_positions, size)
 		tmp = manhattan_distance(puzzle, manhattan_precomputed, size)
 		initial_h += tmp
-	else:
+	""" else:
 		print(f"another one {heuristic_func}")
-		initial_h = heuristic_func(puzzle, manhattan_precomputed, size)
-
+		initial_h = heuristic_func(puzzle, manhattan_precomputed, size) 
+		"""
+	counter = 0
 	start_tuple = tuple(puzzle)
 	goal_tuple = tuple(goal)
 
 
-	heapq.heappush(open_set, (initial_h, start_tuple, None, zero_position)) # I remove g
+	heapq.heappush(open_set, (initial_h, start_tuple, None, zero_position))
 	visited.add(start_tuple)
 	came_from[start_tuple] = None
 	states_explored = 0
@@ -539,21 +477,21 @@ def greedy_search(puzzle: List[int], goal: List[int], size: int,heuristic_func: 
 					new_heuristic -= hamming_precomputed[tile_being_moved][new_tile_position]
 					new_heuristic += hamming_precomputed[tile_being_moved][zero_position]
 
-				elif heuristic_func is manhattan_distance or heuristic_func is linear_conflict_distance: #linear-conflict with manhattan
+				elif heuristic_func is manhattan_distance or heuristic_func is linear_conflict_distance:
 					tile_being_moved = current[new_empty_position]
 					new_tile_position = new_empty_position
 					new_heuristic = f
 					new_heuristic -= manhattan_precomputed[tile_being_moved][new_tile_position]
 					new_heuristic += manhattan_precomputed[tile_being_moved][zero_position]
 
-					if heuristic_func is linear_conflict_distance: # optimisé
+					if heuristic_func is linear_conflict_distance:
 						tile_being_moved = current[new_empty_position]
 						new_tile_position = new_empty_position
 						new_heuristic = f
-
 						modified_column = []
 						modified_row = []
-						if move == 'left' or move == 'right': #is row False
+
+						if move == 'left' or move == 'right':
 
 							tmp = zero_position % size
 							modified_column.append(tmp)
@@ -570,21 +508,6 @@ def greedy_search(puzzle: List[int], goal: List[int], size: int,heuristic_func: 
 							
 							LC_removal = linear_conflict_on_multiple_lines(current_modified_line_filtered, goal_modified_line, col_goal_indices)
 							LC_add = linear_conflict_on_multiple_lines(neighbor_modified_line_filtered, goal_modified_line, col_goal_indices)
-							
-							""" current_modified_line = get_modified_line(current, size, modified_column, column_indices, False)
-							current_modified_line_filtered = filter_column_candidates_tuple(current_modified_line, goal_columns_computed, modified_column, size)
-							goal_modified_line = [goal_columns_computed[modified_column[0]]['values'],goal_columns_computed[modified_column[1]]['values']]
-
-							LC_on_line_test_0 = linear_conflict_on_line(current_modified_line_filtered[0], goal_modified_line[0], col_goal_indices)
-							LC_on_line_test_1 = linear_conflict_on_line(current_modified_line_filtered[1], goal_modified_line[1], col_goal_indices)
-							LC_removal = LC_on_line_test_0 + LC_on_line_test_1
-
-							neighbor_modified_line = get_modified_line(neighbor, size, modified_column, column_indices, False)
-							neighbor_modified_line_filtered = filter_column_candidates_tuple(neighbor_modified_line, goal_columns_computed, modified_column, size)
-
-							LC_on_line_test_0 = linear_conflict_on_line(neighbor_modified_line_filtered[0], goal_modified_line[0], col_goal_indices)
-							LC_on_line_test_1 = linear_conflict_on_line(neighbor_modified_line_filtered[1], goal_modified_line[1], col_goal_indices)
-							LC_add = LC_on_line_test_0 + LC_on_line_test_1 """
 
 							new_heuristic -= LC_removal
 							new_heuristic += LC_add
@@ -605,25 +528,16 @@ def greedy_search(puzzle: List[int], goal: List[int], size: int,heuristic_func: 
 							LC_removal = linear_conflict_on_multiple_lines(current_modified_line_filtered, goal_modified_line, row_goal_indices)
 							LC_add = linear_conflict_on_multiple_lines(neighbor_modified_line_filtered, goal_modified_line, row_goal_indices)
 
-							""" current_modified_line = get_modified_line(current, size, modified_row, column_indices, True)
-							current_modified_line_filtered = filter_row_canditates_tuple(current_modified_line, goal_rows_computed, modified_row, size)
-							goal_modified_line = [goal_rows_computed[modified_row[0]]['values'],goal_rows_computed[modified_row[1]]['values']]
-
-							LC_on_line_test_0 = linear_conflict_on_line(current_modified_line_filtered[0], goal_modified_line[0], row_goal_indices)
-							LC_on_line_test_1 = linear_conflict_on_line(current_modified_line_filtered[1], goal_modified_line[1], row_goal_indices)
-							LC_removal = LC_on_line_test_0 + LC_on_line_test_1
-
-							neighbor_modified_line = get_modified_line(neighbor, size, modified_row, column_indices, True)
-							neighbor_modified_line_filtered = filter_row_canditates_tuple(neighbor_modified_line, goal_rows_computed, modified_row, size)
-
-							LC_on_line_test_0 = linear_conflict_on_line(neighbor_modified_line_filtered[0], goal_modified_line[0], row_goal_indices)
-							LC_on_line_test_1 = linear_conflict_on_line(neighbor_modified_line_filtered[1], goal_modified_line[1], row_goal_indices)
-							LC_add = LC_on_line_test_0 + LC_on_line_test_1 """
-
 							new_heuristic -= LC_removal
 							new_heuristic += LC_add
 				else:
 					new_heuristic = heuristic_func(neighbor, goal, goal_positions, size)
+				
+				""" tmp_h = 0
+				if new_heuristic != tmp_h:
+					print(f" h(x) {counter} (Linear Conflict): {new_heuristic}")
+					tmp_h = new_heuristic
+				counter += 1 """
 				heapq.heappush(open_set, ( new_heuristic, neighbor_tuple, move, new_empty_position))
 
 		max_states_in_memory = max(max_states_in_memory, len(open_set))
@@ -638,15 +552,10 @@ def ida_star(puzzle: List[int], goal: List[int], size: int,heuristic_func: Calla
 	print("IDA search: Initial state\n")
 	display_puzzle(puzzle, size)
 
-	#precomputing everything to be sent to dfs
-	goal_positions = precompute_goal_positions(goal, size)
-	manhattan_precomputed = precompute_distance_dictionary(goal_positions, size, manhattan_metric)
-	hamming_precomputed = precompute_distance_dictionary(goal_positions, size, hamming_metric)
-	column_indices = [[k * size + j for k in range(size)] for j in range(size)]
-	row_goal_indices = precompute_goal_indices(goal_positions, is_row=True)
-	col_goal_indices = precompute_goal_indices(goal_positions, is_row=False)
-	goal_columns_computed = precompute_goal_columns(goal, size)
-	goal_rows_computed = precompute_goal_rows(goal, size)
+	
+	goal_positions = state.goal_positions
+	manhattan_precomputed = state.manhattan_precomputed
+
 
 	if heuristic_func is manhattan_distance:
 		threshold = heuristic_func(puzzle, manhattan_precomputed, size)
@@ -656,25 +565,11 @@ def ida_star(puzzle: List[int], goal: List[int], size: int,heuristic_func: Calla
 		threshold = linear_conflict_distance(puzzle, goal_positions, size)
 		tmp = manhattan_distance(puzzle, manhattan_precomputed, size)
 		threshold += tmp
-	else:
-		# to modify or remove
-		print(f"another one {heuristic_func}")
-		threshold = heuristic_func(puzzle, manhattan_precomputed, size)
 
 	f = None
 
 	while True:
-		result = dfs(state, puzzle, goal, size, heuristic_func, 0, threshold, [],
-			goal_positions,
-			manhattan_precomputed,
-			hamming_precomputed,
-			column_indices,
-			row_goal_indices,
-			col_goal_indices,
-			goal_columns_computed,
-			goal_rows_computed,
-			f
-			)
+		result = dfs(state, puzzle, goal, size, heuristic_func, 0, threshold, [],f)
 
 		if isinstance(result, dict):
 			return result
@@ -682,38 +577,33 @@ def ida_star(puzzle: List[int], goal: List[int], size: int,heuristic_func: Calla
 			return None
 		threshold = result
 
-def dfs(state:PuzzleState,puzzle, goal, size, heuristic_func, g, threshold, path,
-		goal_positions,
-		manhattan_precomputed,
-		hamming_precomputed,
-		column_indices,
-		row_goal_indices,
-		col_goal_indices,
-		goal_columns_computed,
-		goal_rows_computed,
+def dfs(state:PuzzleState,puzzle: List[int], goal: List[int], size: int, heuristic_func: Callable[[List[int], Dict[int, Dict[int, int]], int], int], 
+		g:int, 
+		threshold:int, 
+		path: List[List[int]],
 		f
-		):
+		)-> Union[Dict[str, Any], int]:
 	"""
 	Depth-First Search 
 	Parameter:
-	state: class PuzzleState
-	puzzle: a list of int (in flattened notation) representing the puzzle to be solved
-	goal: a list of int (in flattened notation) representing the final state
+	state: class PuzzleState, a container
+	puzzle: A list of int (in flattened notation) representing the puzzle to be solved
+	goal: A list of int (in flattened notation) representing the final state
 	heuristic_func : a function for computing the heuristic cost
-	g: int, the cost,
-	threshold: int, the maximum depth dfs searches
-	path: 
-	goal_positions:
-	manhattan_precomputed:
-	hamming_precomputed:
-	column_indices:
-	row_goal_indices:
-	col_goal_indices:
-	goal_columns_computed:
-	goal_row_computed:
+	g: The cost,
+	threshold: The maximum depth dfs searches
+	path: A list of list of int, representing the solution
 	f: int the heuristics cost
 	"""
-	
+	goal_positions = state.goal_positions
+	manhattan_precomputed = state.manhattan_precomputed
+	hamming_precomputed = state.hamming_precomputed
+	column_indices = state.column_indices
+	row_goal_indices = state.row_goal_indices
+	col_goal_indices = state.col_goal_indices
+	goal_columns_computed = state.goal_columns_computed
+	goal_rows_computed = state.goal_rows_computed
+
 	if f is None:
 		if heuristic_func is manhattan_distance:
 			h = heuristic_func(puzzle, manhattan_precomputed, size)
@@ -723,36 +613,25 @@ def dfs(state:PuzzleState,puzzle, goal, size, heuristic_func, g, threshold, path
 			h = linear_conflict_distance(puzzle, goal_positions, size)
 			tmp = manhattan_distance(puzzle, manhattan_precomputed, size)
 			h += tmp
-		else:
-			# to modify or remove
-			print(f"another one {heuristic_func}")
-			h = heuristic_func(puzzle, manhattan_precomputed, size)
-
 		f = g + h
 
-	#pruning
 	if f > threshold:
 		return f
-	# Check if the goal state is reached
 	if puzzle == goal:
 		return {
 			"path": path + [puzzle],
 			"moves": len(path),
-			"states_explored": len(path),  # Optional: track visited states
-			"max_states_in_memory": len(path)  # Optional: track memory usage
+			"states_explored": len(path),
+			"max_states_in_memory": len(path)
 		}
 
-	#explore neighbor
+	
 	min_cost = float('inf')
 	zero_position = puzzle.index(0)
 
-	column_indices = state.column_indices
-	row_goal_indices = state.col_goal_indices
-	col_goal_indices = state.col_goal_indices
-
 	for neighbor, move in get_neighbors(puzzle, size, zero_position, None):
 		if path and neighbor == path[-1]:
-			continue  # Skip the immediate parent
+			continue 
 
 		if move == "left":
 			new_empty_position = zero_position - 1
@@ -791,7 +670,8 @@ def dfs(state:PuzzleState,puzzle, goal, size, heuristic_func, g, threshold, path
 					else:
 						modified_column.append(tmp + 1)
 
-					current_modified_line_filtered = get_and_filter_line(current, size, modified_column, column_indices, goal_columns_computed, is_row=False)
+					
+					current_modified_line_filtered = get_and_filter_line(puzzle, size, modified_column, column_indices, goal_columns_computed, is_row=False)
 					goal_modified_line = [goal_columns_computed[modified_column[0]]['values'],goal_columns_computed[modified_column[1]]['values']]
 							
 					neighbor_modified_line_filtered = get_and_filter_line(neighbor, size, modified_column, column_indices, goal_columns_computed, is_row=False)
@@ -799,20 +679,6 @@ def dfs(state:PuzzleState,puzzle, goal, size, heuristic_func, g, threshold, path
 					LC_removal = linear_conflict_on_multiple_lines(current_modified_line_filtered, goal_modified_line, col_goal_indices)
 					LC_add = linear_conflict_on_multiple_lines(neighbor_modified_line_filtered, goal_modified_line, col_goal_indices)
 							
-					""" current_modified_line = get_modified_line(puzzle, size, modified_column, column_indices, False)# to check... (before current)
-					current_modified_line_filtered = filter_column_candidates_tuple(current_modified_line, goal_columns_computed, modified_column, size)
-					goal_modified_line = [goal_columns_computed[modified_column[0]]['values'],goal_columns_computed[modified_column[1]]['values']]
-
-					LC_on_line_test_0 = linear_conflict_on_line(current_modified_line_filtered[0], goal_modified_line[0], col_goal_indices)
-					LC_on_line_test_1 = linear_conflict_on_line(current_modified_line_filtered[1], goal_modified_line[1], col_goal_indices)
-					LC_removal = LC_on_line_test_0 + LC_on_line_test_1
-
-					neighbor_modified_line = get_modified_line(neighbor, size, modified_column, column_indices, False)
-					neighbor_modified_line_filtered = filter_column_candidates_tuple(neighbor_modified_line, goal_columns_computed, modified_column, size)
-
-					LC_on_line_test_0 = linear_conflict_on_line(neighbor_modified_line_filtered[0], goal_modified_line[0], col_goal_indices)
-					LC_on_line_test_1 = linear_conflict_on_line(neighbor_modified_line_filtered[1], goal_modified_line[1], col_goal_indices)
-					LC_add = LC_on_line_test_0 + LC_on_line_test_1 """
 
 					new_heuristic -= LC_removal
 					new_heuristic += LC_add
@@ -824,7 +690,8 @@ def dfs(state:PuzzleState,puzzle, goal, size, heuristic_func, g, threshold, path
 					else:
 						modified_row.append(tmp + 1)
 
-					current_modified_line_filtered = get_and_filter_line(current, size, modified_row, column_indices, goal_rows_computed, is_row=True)
+					
+					current_modified_line_filtered = get_and_filter_line(puzzle, size, modified_row, column_indices, goal_rows_computed, is_row=True)
 					goal_modified_line = [goal_rows_computed[modified_row[0]]['values'],goal_rows_computed[modified_row[1]]['values']]
 
 					neighbor_modified_line_filtered = get_and_filter_line(neighbor, size, modified_row, column_indices, goal_rows_computed, is_row=True)
@@ -832,37 +699,16 @@ def dfs(state:PuzzleState,puzzle, goal, size, heuristic_func, g, threshold, path
 							
 					LC_removal = linear_conflict_on_multiple_lines(current_modified_line_filtered, goal_modified_line, row_goal_indices)
 					LC_add = linear_conflict_on_multiple_lines(neighbor_modified_line_filtered, goal_modified_line, row_goal_indices)
-					
-					""" current_modified_line = get_modified_line(puzzle, size, modified_row, column_indices, True)	# to check... (before current)
-					current_modified_line_filtered = filter_row_canditates_tuple(current_modified_line, goal_rows_computed, modified_row, size)
-					goal_modified_line = [goal_rows_computed[modified_row[0]]['values'],goal_rows_computed[modified_row[1]]['values']]
-
-					LC_on_line_test_0 = linear_conflict_on_line(current_modified_line_filtered[0], goal_modified_line[0], row_goal_indices)
-					LC_on_line_test_1 = linear_conflict_on_line(current_modified_line_filtered[1], goal_modified_line[1], row_goal_indices)
-					LC_removal = LC_on_line_test_0 + LC_on_line_test_1
-
-					neighbor_modified_line = get_modified_line(neighbor, size, modified_row, column_indices, True)
-					neighbor_modified_line_filtered = filter_row_canditates_tuple(neighbor_modified_line, goal_rows_computed, modified_row, size)
-
-					LC_on_line_test_0 = linear_conflict_on_line(neighbor_modified_line_filtered[0], goal_modified_line[0], row_goal_indices)
-					LC_on_line_test_1 = linear_conflict_on_line(neighbor_modified_line_filtered[1], goal_modified_line[1], row_goal_indices)
-					LC_add = LC_on_line_test_0 + LC_on_line_test_1 """
 
 					new_heuristic -= LC_removal
 					new_heuristic += LC_add
 		else:
 			new_heuristic = heuristic_func(neighbor, goal, goal_positions, size)
-		# compute new f
+		
 		g_new = g + 1
 		f_new = g_new + new_heuristic
-		# recursive call
-		result = dfs(state,
-			neighbor, goal, size, heuristic_func, g_new, threshold,
-			path + [puzzle], goal_positions,manhattan_precomputed,
-			hamming_precomputed, row_goal_indices, col_goal_indices,
-			column_indices, goal_columns_computed, goal_rows_computed,
-			f_new
-		)
+		
+		result = dfs(state, neighbor, goal, size, heuristic_func, g_new, threshold,path + [puzzle], f_new)
 		if isinstance(result, dict):
 			return result
 		min_cost = min(min_cost, result)

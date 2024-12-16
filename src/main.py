@@ -38,35 +38,36 @@ def main():
 	else:
 		puzzle_file_path = None
 
-	# Chargement du puzzle
-	puzzle_test = TXT_Checker(puzzle_file)
+	""" puzzle_test = TXT_Checker(puzzle_file)
 	test = puzzle_test.is_Puzzle()
 	if test:
-		puzzle_test.save_clean_version(puzzle_file)
-		#print(f"le fichier {puzzle_file} est ok ? {test}")
-	#else :
+		puzzle_test.save_clean_version(puzzle_file) """
+
 	if puzzle_file and Path(puzzle_file).is_file():
-		print(f"Loading puzzle from {puzzle_file}")
-		try:
-			puzzle, size = parse_puzzle(puzzle_file)
-		except ValueError as e:
-			print(f"Erreur lors du parsing du fichier : {e}")
-			sys.exit(1)
+		puzzle_test = TXT_Checker(puzzle_file)
+		test = puzzle_test.is_Puzzle()
+		if test:
+			puzzle_test.save_clean_version(puzzle_file)
+			print(f"Loading puzzle from {puzzle_file}")
+		if puzzle_file and Path(puzzle_file).is_file():
+			print(f"Loading puzzle from {puzzle_file}")
+			try:	
+				puzzle, size = parse_puzzle(puzzle_file)
+			except ValueError as e:
+				print(f"Erreur lors du parsing du fichier : {e}")
+				sys.exit(1)
 	else:
 		print(f"Generating a random solvable puzzle of size {size} with {iterations} iterations.")
 		puzzle = generate_puzzle(size, iterations, solvable)
 
-	# Affichage du puzzle initial
-	#print("Initial Puzzle State:")
-	#display_puzzle(puzzle, size)
 	tmp = generate_goal(size)
 	inversions = count_inversions(puzzle, tmp)
-	# Résolution du puzzle
+	# Résolution du puzzle avec profiling
 	print(f"Solving puzzle using the {algorithm} with {heuristic} heuristic")
 	cProfile.runctx('solve_puzzle(algorithm,puzzle, size, heuristic, inversions)', globals(), locals())
 	solution = solve_puzzle(algorithm, puzzle, size, heuristic, inversions)
 
-	# Affichage des résultats
+	
 	if solution:
 		print("Puzzle solved!")
 		print("Solution path:")
