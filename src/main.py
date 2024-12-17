@@ -23,12 +23,12 @@ def load_config(config_path="config.yaml"):
 def main():
 	config = load_config()
 	
-	size = config.get("size", 3)
-	iterations = config.get("iterations", 10)
-	heuristic = config.get("heuristic", "manhattan")
+	size = config.get("size") or 3
+	iterations = config.get("iterations") or 10
+	heuristic = config.get("heuristic") or "manhattan"
 	puzzle_file = config.get("file")
-	solvable = config.get("solvable", True)
-	algorithm = config.get("algorithm","A-star")
+	solvable = config.get("solvable") or True
+	algorithm = config.get("algorithm") or "A-star"
 
 	if size < 3:
 		print("Can't generate and resolvate a puzzle with size lower than 2. It says so in the help. Dummy.")
