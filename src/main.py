@@ -1,6 +1,7 @@
 # Point d'entrée principal pour exécuter le programme
 import yaml
 import sys
+import os
 import cProfile
 from pathlib import Path
 from puzzle_generator import generate_puzzle, count_inversions
@@ -40,19 +41,23 @@ def main():
 
 	# Chargement du puzzle
 	if puzzle_file and Path(puzzle_file).is_file():
-		puzzle_test = TXT_Checker(puzzle_file)
-		test = puzzle_test.is_Puzzle()
-		if test:
-			puzzle_test.save_clean_version(puzzle_file)
-			#print(f"le fichier {puzzle_file} est ok ? {test}")
-		#else :
-		if puzzle_file and Path(puzzle_file).is_file():
-			print(f"Loading puzzle from {puzzle_file}")
-			try:
-				puzzle, size = parse_puzzle(puzzle_file)
-			except ValueError as e:
-				print(f"Erreur lors du parsing du fichier : {e}")
-				sys.exit(1)
+		if os.stat(puzzle_file).st_size > 0:
+			puzzle_test = TXT_Checker(puzzle_file)
+			test = puzzle_test.is_Puzzle()
+			if test:
+				puzzle_test.save_clean_version(puzzle_file)
+				#print(f"le fichier {puzzle_file} est ok ? {test}")
+			#else :
+			if puzzle_file and Path(puzzle_file).is_file():
+				print(f"Loading puzzle from {puzzle_file}")
+				try:
+					puzzle, size = parse_puzzle(puzzle_file)
+				except ValueError as e:
+					print(f"Erreur lors du parsing du fichier : {e}")
+					sys.exit(1)
+		else:
+			print(f"Generating a random solvable puzzle of size {size} with {iterations} iterations.")
+			puzzle = generate_puzzle(size, iterations, solvable)
 	else:
 		print(f"Generating a random solvable puzzle of size {size} with {iterations} iterations.")
 		puzzle = generate_puzzle(size, iterations, solvable)

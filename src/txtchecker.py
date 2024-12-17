@@ -38,6 +38,7 @@ class TXT_Checker:
             if not self.lines:
                 print(f"Error: Empty file:")
                 self.error_found = True
+                return False
             return True
         except Exception as e:
             print(f"Error: Error opening file: {e}")
