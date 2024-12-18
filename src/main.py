@@ -66,7 +66,7 @@ def main():
 	inversions = count_inversions(puzzle, tmp)
 	# Résolution du puzzle avec profiling
 	print(f"Solving puzzle using the {algorithm} with {heuristic} heuristic")
-	cProfile.runctx('solve_puzzle(algorithm,puzzle, size, heuristic, inversions)', globals(), locals())
+	#cProfile.runctx('solve_puzzle(algorithm,puzzle, size, heuristic, inversions)', globals(), locals())
 	solution = solve_puzzle(algorithm, puzzle, size, heuristic, inversions)
 
 	
