@@ -244,7 +244,7 @@ def a_star(puzzle: List[int], goal: List[int], size: int,heuristic_func: Callabl
 	display_puzzle(goal, size)
 	print("A* search: Initial state\n")
 	display_puzzle(puzzle, size)
-	print(puzzle)
+	
 
 	column_indices = [[k * size + j for k in range(size)] for j in range(size)]
 	goal_positions = precompute_goal_positions(goal, size)
