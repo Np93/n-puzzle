@@ -31,11 +31,11 @@ def precompute_goal_positions(goal: List[int], size: int)-> Dict[int, tuple[int,
 	"""
 	Precomputes the positions of tiles in the goal state.
 
-    Maps each tile value to its (column, row) position in the goal state grid.
+	Maps each tile value to its (column, row) position in the goal state grid.
 
-    goal: A list of integers representing the tiles in the goal state.
-    size: The dimension of the grid (e.g., 4 for a 4x4 puzzle).
-    return: A dictionary where keys are tile values and values are tuples (column, row) representing their positions.
+	goal: A list of integers representing the tiles in the goal state.
+	size: The dimension of the grid (e.g., 4 for a 4x4 puzzle).
+	return: A dictionary where keys are tile values and values are tuples (column, row) representing their positions.
 	"""
 	goal_positions = {}
 	for i, tile in enumerate(goal):
@@ -45,15 +45,15 @@ def precompute_goal_positions(goal: List[int], size: int)-> Dict[int, tuple[int,
 
 def	precompute_goal_columns(goal: List[int], size: int)->Dict[int, Dict[str, Union[List[int], Set[int]]]]:
 	"""
-    Precomputes the columns of the goal state and organizes them into a structured format.
+	Precomputes the columns of the goal state and organizes them into a structured format.
 
-    For each column index, creates a dictionary containing:
-    - 'values': A list of tile values in the column.
-    - 'set': A set of unique tile values in the column.
+	For each column index, creates a dictionary containing:
+	- 'values': A list of tile values in the column.
+	- 'set': A set of unique tile values in the column.
 
-    goal: A list of integers representing the tiles in the goal state.
-    size: The dimension of the grid (e.g., 4 for a 4x4 puzzle).
-    return: A dictionary where keys are column indices, and values are dictionaries with 'values' and 'set' of tile values.
+	goal: A list of integers representing the tiles in the goal state.
+	size: The dimension of the grid (e.g., 4 for a 4x4 puzzle).
+	return: A dictionary where keys are column indices, and values are dictionaries with 'values' and 'set' of tile values.
 	"""
 	goal_columns = {}
 	for index in range(size):
@@ -63,15 +63,15 @@ def	precompute_goal_columns(goal: List[int], size: int)->Dict[int, Dict[str, Uni
 
 def precompute_goal_rows(goal: List[int], size: int)->Dict[int, Dict[str, Union[List[int], Set[int]]]]:
 	"""
-    Precomputes the rows of the goal state and organizes them into a structured format.
+	Precomputes the rows of the goal state and organizes them into a structured format.
 
-    For each column index, creates a dictionary containing:
-    - 'values': A list of tile values in the column.
-    - 'set': A set of unique tile values in the column.
+	For each column index, creates a dictionary containing:
+	- 'values': A list of tile values in the column.
+	- 'set': A set of unique tile values in the column.
 
-    goal: A list of integers representing the tiles in the goal state.
-    size: The dimension of the grid (e.g., 5 for a 5x5 puzzle).
-    return: A dictionary where keys are row indices, and values are dictionaries with 'values' and 'set' of tile values.
+	goal: A list of integers representing the tiles in the goal state.
+	size: The dimension of the grid (e.g., 5 for a 5x5 puzzle).
+	return: A dictionary where keys are row indices, and values are dictionaries with 'values' and 'set' of tile values.
 	"""
 	goal_rows = {}
 	for index in range(size):
@@ -125,7 +125,7 @@ def update_Manhattan_distance(last_h: int, zero_position: int, target_position: 
 	target_position: the new position of the zero tile after the move
 	moved_tile: the tile that moved to the zero position
 	manhattan_precomputed (Dict[int, Dict[int, int]]): Precomputed Manhattan distances
-        where the outer key is the tile value, the inner key is the position, 
+		where the outer key is the tile value, the inner key is the position, 
 		and the value is the Manhattan distance to the tile's goal position.
 	return: int: The updated Manhattan distance after the move. 	
 	"""
@@ -193,25 +193,25 @@ def solve_puzzle(algorithm, puzzle, size, heuristic_name, inversions):
 
 def get_neighbors(puzzle: List[int], size: int, zero_index: int, last_move: str=None) -> List[Tuple[int, int]]:
 	"""
-    Generate a list of possible neighbor states for the given puzzle by moving the blank tile (0).
-    
-    Each neighbor is represented by a new puzzle configuration and the direction of the move made to 
-    reach that configuration.
+	Generate a list of possible neighbor states for the given puzzle by moving the blank tile (0).
+	
+	Each neighbor is represented by a new puzzle configuration and the direction of the move made to 
+	reach that configuration.
 
-    Args:
-        puzzle (List[int]): The current state of the puzzle represented as a flat list of integers.
-        Each element corresponds to a tile, with 0 representing the blank tile.
-        size (int): The size of the puzzle (e.g., 3 for a 3x3 puzzle).
-        zero_index (int): The index of the blank tile (0) in the puzzle.
-        last_move (str, optional): The direction of the last move made ("up", "down", "left", "right").
-            This helps prevent reversing the last move (default is None).
+	Args:
+		puzzle (List[int]): The current state of the puzzle represented as a flat list of integers.
+		Each element corresponds to a tile, with 0 representing the blank tile.
+		size (int): The size of the puzzle (e.g., 3 for a 3x3 puzzle).
+		zero_index (int): The index of the blank tile (0) in the puzzle.
+		last_move (str, optional): The direction of the last move made ("up", "down", "left", "right").
+			This helps prevent reversing the last move (default is None).
 
-    Returns:
-        List[Tuple[List[int], str]]: A list of tuples, where each tuple contains:
-            - A new puzzle state (List[int]) after moving the blank tile.
-            - A string representing the direction of the move made to reach that state ("up", "down", "left", or "right").
-    
-    """
+	Returns:
+		List[Tuple[List[int], str]]: A list of tuples, where each tuple contains:
+			- A new puzzle state (List[int]) after moving the blank tile.
+			- A string representing the direction of the move made to reach that state ("up", "down", "left", or "right").
+	
+	"""
 	neighbors = []
 	x, y = zero_index % size, zero_index // size
 
@@ -244,6 +244,7 @@ def a_star(puzzle: List[int], goal: List[int], size: int,heuristic_func: Callabl
 	display_puzzle(goal, size)
 	print("A* search: Initial state\n")
 	display_puzzle(puzzle, size)
+	print(puzzle)
 
 	column_indices = [[k * size + j for k in range(size)] for j in range(size)]
 	goal_positions = precompute_goal_positions(goal, size)
@@ -253,7 +254,7 @@ def a_star(puzzle: List[int], goal: List[int], size: int,heuristic_func: Callabl
 	goal_rows_computed = precompute_goal_rows(goal, size)
 	manhattan_precomputed = precompute_distance_dictionary(goal_positions, size, manhattan_metric)
 	hamming_precomputed = precompute_distance_dictionary(goal_positions, size, hamming_metric)
-	print(f"column_indices {type(column_indices)}:{column_indices}")
+	
 	
 	
 	open_set = []
@@ -385,6 +386,7 @@ def a_star(puzzle: List[int], goal: List[int], size: int,heuristic_func: Callabl
 		max_states_in_memory = max(max_states_in_memory, len(open_set))
 		states_explored += 1
 	return None
+
 
 
 def greedy_search(puzzle: List[int], goal: List[int], size: int,heuristic_func: Callable[[List[int], Dict[int, Dict[int, int]], int], int]) -> List[List[int]]:
