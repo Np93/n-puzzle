@@ -1,4 +1,3 @@
-# Génération et gestion des puzzles
 import random, sys
 from goal_generator import generate_goal, generate_goal_array
 from utils import display_puzzle
@@ -10,8 +9,6 @@ def generate_puzzle(size, iterations=1000, solvable=True):
 	- Si `solvable` est True, le puzzle est résolvable.
 	- Si `solvable` est False, le puzzle est non résolvable.
 	"""
-	# Crée un puzzle résolvable de base en appliquant des mouvements aléatoires
-	
 	puzzle = generate_goal(size)
 	goal= generate_goal(size)
 	

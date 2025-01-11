@@ -1,4 +1,3 @@
-# Point d'entrée principal pour exécuter le programme
 import yaml
 import sys
 import os
@@ -50,7 +49,6 @@ def main():
 				if test:
 					puzzle_test.save_clean_version(puzzle_file)
 					#print(f"le fichier {puzzle_file} est ok ? {test}")
-				#else :
 				if puzzle_file and Path(puzzle_file).is_file():
 					print(f"Loading puzzle from {puzzle_file}")
 					try:
@@ -77,7 +75,6 @@ def main():
 	#cProfile.runctx('solve_puzzle(algorithm,puzzle, size, heuristic, inversions)', globals(), locals())
 	solution = solve_puzzle(algorithm, puzzle, size, heuristic, inversions, snail)
 
-	
 	if solution:
 		print("Puzzle solved!")
 		print("Solution path:")
