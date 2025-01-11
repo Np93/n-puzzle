@@ -9,7 +9,7 @@ from generate_linear_puzzle import generate_linear_puzzle
 from solver import solve_puzzle
 from utils import display_puzzle
 from parser import parse_puzzle
-from test_goal_generator import generate_goal, generate_goal_linear
+from goal_generator import generate_goal, generate_goal_linear
 from txtchecker import TXT_Checker
 
 def load_config(config_path="config.yaml"):

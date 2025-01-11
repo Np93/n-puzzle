@@ -1,6 +1,6 @@
 # Lecture et parsing des fichiers .txt contenant les puzzles
 import sys
-from test_goal_generator import generate_goal, generate_goal_array
+from goal_generator import generate_goal, generate_goal_array
 from utils import display_puzzle
 
 def parse_puzzle(puzzle_file):

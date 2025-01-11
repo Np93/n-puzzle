@@ -1,6 +1,6 @@
 # Génération et gestion des puzzles
 import random, sys
-from test_goal_generator import generate_goal, generate_goal_array
+from goal_generator import generate_goal, generate_goal_array
 from utils import display_puzzle
 from parser import is_solvable
 

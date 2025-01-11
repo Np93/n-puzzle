@@ -9,7 +9,7 @@ from heuristics import manhattan_distance,  hamming_distance, manhattan_metric, 
 from heuristics_util import get_and_filter_line, linear_conflict_on_multiple_lines
 from parser import is_solvable, is_linear_solvable
 from utils import display_puzzle
-from test_goal_generator import generate_goal, generate_goal_linear
+from goal_generator import generate_goal, generate_goal_linear
 
 class PuzzleState:
     def __init__(self, puzzle, goal, size):
