@@ -27,7 +27,7 @@ def main():
 	iterations = config.get("iterations", 10) or 10
 	heuristic = config.get("heuristic", "manhattan") or "manhattan"
 	puzzle_file = config.get("file")
-	solvable = config.get("solvable", True) or True
+	solvable = config.get("solvable", True)
 	algorithm = config.get("algorithm", "A-star") or "A-star"
 
 	if size < 3:
