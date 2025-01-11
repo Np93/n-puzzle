@@ -2,8 +2,6 @@ import sys
 from utils import display_puzzle
 from typing import List, Callable, Dict,Union, Set, Any
 
-
-
 def get_and_filter_line(
 		puzzle: List[int],
 		size :int,

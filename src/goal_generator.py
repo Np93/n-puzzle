@@ -1,4 +1,4 @@
-# Générateur du puzzle goal en escargot (ou snail)
+# Générateur du puzzle goal en escargot (ou snail) ou linear
 
 def generate_goal_array(size):
     goal_array = [[0 for col in range(size) ] for row in range(size)]
