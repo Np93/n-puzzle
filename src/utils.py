@@ -1,4 +1,3 @@
-# Fonctions utilitaires diverses (par exemple, affichage du puzzle)
 import sys
 
 def display_puzzle(puzzle, size):

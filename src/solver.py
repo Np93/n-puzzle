@@ -1,7 +1,5 @@
-# Implémentation de l'algorithme A* et des heuristiques
 import heapq
 import sys
-
 import cProfile
 import inspect
 from typing import List, Callable, Dict,Union, Set, Any, Tuple
@@ -41,7 +39,6 @@ def precompute_goal_positions(goal: List[int], size: int)-> Dict[int, tuple[int,
     for i, tile in enumerate(goal):
         goal_positions[tile] = (i % size, i // size)
     return goal_positions
-
 
 def	precompute_goal_columns(goal: List[int], size: int)->Dict[int, Dict[str, Union[List[int], Set[int]]]]:
     """
@@ -89,7 +86,6 @@ def precompute_goal_indices(goal_positions:Dict[int, tuple[int, int]], is_row=Tr
     index_type = 0 if is_row else 1
     return {tile: pos[index_type] for tile, pos in goal_positions.items()}
 
-
 def precompute_distance_dictionary(goal_positions: Dict[int, tuple[int, int]], size: int, distance_func) -> Dict[int, Dict[int, int]]:
     """
     Precomputes heuristic distances for a given heuristic function.
@@ -115,7 +111,6 @@ def precompute_distance_dictionary(goal_positions: Dict[int, tuple[int, int]], s
             tile_distance[position] = distance
         distance_dictionary[tile] = tile_distance
     return distance_dictionary
-
 
 def update_Manhattan_distance(last_h: int, zero_position: int, target_position: int, moved_tile:int, manhattan_precomputed: Dict[int, Dict[int, int]])-> int:
     """
@@ -172,11 +167,6 @@ def solve_puzzle(algorithm, puzzle, size, heuristic_name, inversions, snail):
         if not is_linear_solvable(puzzle, size): 
             print("Le puzzle n'est pas résolvable.")
             return None
-
-    # Vérification de la solvabilité
-    # if not is_solvable(puzzle, size, goal): #modif ici
-    #     print("Le puzzle n'est pas résolvable.")
-    #     return None
 
     # Choix de l'heuristique
     heuristic_func = get_heuristic_function(heuristic_name)
