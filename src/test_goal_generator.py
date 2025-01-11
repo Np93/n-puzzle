@@ -47,3 +47,12 @@ def generate_goal(size):
     array = generate_goal_array(size)
     goal_list = [tile for sub in array for tile in sub]
     return goal_list
+
+def generate_goal_linear(size):
+    """
+    Génère l'état final d'un puzzle linéaire.
+    Les nombres sont disposés en ligne de gauche à droite, de haut en bas.
+    """
+    # Crée une liste de 1 à size*size-1, suivi de 0 pour la dernière case
+    goal_list = [i for i in range(1, size * size)] + [0]
+    return goal_list

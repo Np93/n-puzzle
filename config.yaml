@@ -4,3 +4,4 @@ heuristic: "manhattan"      # Heuristique : manhattan, hamming, ou linear_confli
 file: "test.txt"     # Nom du fichier contenant un N-puzzle si inexitant le cree automatiquement
 solvable: true              # true pour un puzzle résolvable, false pour non résolvable
 algorithm: "uniform-cost"            # Algorithme : A-star, greedy ou IDA ou uniform-cost
+snail: true

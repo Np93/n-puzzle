@@ -7,9 +7,9 @@ import inspect
 from typing import List, Callable, Dict,Union, Set, Any, Tuple
 from heuristics import manhattan_distance,  hamming_distance, manhattan_metric, hamming_metric, linear_conflict_distance
 from heuristics_util import get_and_filter_line, linear_conflict_on_multiple_lines
-from parser import is_solvable
+from parser import is_solvable, is_linear_solvable
 from utils import display_puzzle
-from test_goal_generator import generate_goal
+from test_goal_generator import generate_goal, generate_goal_linear
 
 class PuzzleState:
     def __init__(self, puzzle, goal, size):
@@ -152,7 +152,7 @@ def get_heuristic_function(heuristic_name: str):
         print(f"Erreur : {e}")
         sys.exit()
 
-def solve_puzzle(algorithm, puzzle, size, heuristic_name, inversions):
+def solve_puzzle(algorithm, puzzle, size, heuristic_name, inversions, snail):
     """
     Sélectionne la meilleure stratégie de résolution en fonction du nombre d'inversions.
     - algorithm: le choix algorithmique (A-star, greedy ou IDA ou uniform-cost)
@@ -161,12 +161,22 @@ def solve_puzzle(algorithm, puzzle, size, heuristic_name, inversions):
     - heuristic_name : nom de l'heuristique à utiliser
     - inversions : nombre d'inversions dans le puzzle
     """
-    goal = generate_goal(size)
+    if snail:
+        goal = generate_goal(size)
+        # Vérification de la solvabilité
+        if not is_solvable(puzzle, size, goal):
+            print("Le puzzle n'est pas résolvable.")
+            return None
+    else:
+        goal = generate_goal_linear(size)
+        if not is_linear_solvable(puzzle, size): 
+            print("Le puzzle n'est pas résolvable.")
+            return None
 
     # Vérification de la solvabilité
-    if not is_solvable(puzzle, size, goal): #modif ici
-        print("Le puzzle n'est pas résolvable.")
-        return None
+    # if not is_solvable(puzzle, size, goal): #modif ici
+    #     print("Le puzzle n'est pas résolvable.")
+    #     return None
 
     # Choix de l'heuristique
     heuristic_func = get_heuristic_function(heuristic_name)
