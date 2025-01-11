@@ -135,8 +135,6 @@ def update_Manhattan_distance(last_h: int, zero_position: int, target_position: 
 
     return last_h
 
-
-
 def get_heuristic_function(heuristic_name: str):
     """
     Renvoie la fonction heuristique en fonction du nom spécifié.
@@ -154,19 +152,16 @@ def get_heuristic_function(heuristic_name: str):
         print(f"Erreur : {e}")
         sys.exit()
 
-
-
 def solve_puzzle(algorithm, puzzle, size, heuristic_name, inversions):
     """
     Sélectionne la meilleure stratégie de résolution en fonction du nombre d'inversions.
-    - algorithm: le choix algorithmique (A-star, greedy ou IDA)
+    - algorithm: le choix algorithmique (A-star, greedy ou IDA ou uniform-cost)
     - puzzle : état initial du puzzle sous forme de liste
     - size : taille du puzzle
     - heuristic_name : nom de l'heuristique à utiliser
     - inversions : nombre d'inversions dans le puzzle
     """
     goal = generate_goal(size)
-
 
     # Vérification de la solvabilité
     if not is_solvable(puzzle, size, goal): #modif ici
@@ -180,8 +175,6 @@ def solve_puzzle(algorithm, puzzle, size, heuristic_name, inversions):
     try:
         if algorithm == "A-star" or "greedy" or "uniform-cost":
             return solve_puzzle_algorithm(puzzle, goal, size, heuristic_func, algorithm)
-        # elif algorithm == "greedy":
-        # 	return greedy_search(puzzle, goal, size, heuristic_func, algorithm)
         elif algorithm == "IDA":
             return ida_star(puzzle, goal, size, heuristic_func)
         else:
@@ -189,7 +182,6 @@ def solve_puzzle(algorithm, puzzle, size, heuristic_name, inversions):
     except NotImplementedError as e:
         print(f"Erreur : {e}")
         sys.exit()
-
 
 def get_neighbors(puzzle: List[int], size: int, zero_index: int, last_move: str=None) -> List[Tuple[int, int]]:
     """
