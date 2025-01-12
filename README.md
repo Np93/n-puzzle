@@ -81,11 +81,11 @@ Le N-puzzle est un casse-tête constitué d'une grille de taille `N x N` contena
     ```
 
 ## Contributeurs
-- Np93[https://github.com/Np93]
-- jsollet[https://github.com/jsollet]
+- [Np93](https://github.com/Np93)
+- [jsollet](https://github.com/jsollet)
 
 ## Licence
-Ce projet est sous licence MIT. Vous êtes libre d'utiliser, modifier et distribuer ce projet, tant que vous incluez une copie de la licence. Voir le fichier LICENSE[https://github.com/Np93/n-puzzle/blob/main/LICENSE] pour plus de détails.
+Ce projet est sous licence MIT. Vous êtes libre d'utiliser, modifier et distribuer ce projet, tant que vous incluez une copie de la licence. Voir le fichier [LICENSE](https://github.com/Np93/n-puzzle/blob/main/LICENSE) pour plus de détails.
 
 ## Sujet
-pour plus d'information vous trouverez le sujet ici[https://github.com/Np93/n-puzzle/blob/main/sujet/sujet.pdf]
+pour plus d'information vous trouverez le sujet [ici](https://github.com/Np93/n-puzzle/blob/main/sujet/sujet.pdf)
