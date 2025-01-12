@@ -43,16 +43,15 @@ def manhattan_distance(puzzle: List[int], manhattan_precomputed: Dict[int, Dict[
             total_distance += manhattan_precomputed[tile][position]
     return total_distance
 
-# not done
-#  def misplaced_tiles(puzzle, goal, size):
-#     misplaced = sum(1 for i, tile in enumerate(puzzle) if tile != 0 and tile != goal[i])
-#     return misplaced
+def misplaced_tiles(puzzle, goal, size):
+    misplaced = sum(1 for i, tile in enumerate(puzzle) if tile != 0 and tile != goal[i])
+    return misplaced
 
-# def dynamic_misplaced_heuristic(puzzle, goal, size):
-#     misplaced = misplaced_tiles(puzzle, goal, size)
-#     # Pondération dynamique qui augmente l'impact de l'heuristique en fonction du nombre de tuiles mal placées
-#     weight = 1 + (misplaced / (size * size))
-#     return misplaced * weight 
+def dynamic_misplaced_heuristic(puzzle, goal, size):
+    misplaced = misplaced_tiles(puzzle, goal, size)
+    # Pondération dynamique qui augmente l'impact de l'heuristique en fonction du nombre de tuiles mal placées
+    weight = 1 + (misplaced / (size * size))
+    return misplaced * weight 
 
 def hamming_distance(puzzle: List[int], goal: List[int], goal_positions: Dict[int, tuple[int, int]], size : int)->int:
     """

@@ -1,7 +1,7 @@
 size: 3                   # Taille du puzzle NxN
 iterations: 100       # Nombre d'itérations pour mélanger
-heuristic: "manhattan"      # Heuristique : manhattan, hamming, ou linear_conflict
+heuristic: "manhattan"      # Heuristique : manhattan, hamming, ou linear_conflict ou dynamic_misplace
 file: "test.txt"     # Nom du fichier contenant un N-puzzle si inexitant le cree automatiquement
 solvable: true              # true pour un puzzle résolvable, false pour non résolvable
-algorithm: "uniform-cost"            # Algorithme : A-star, greedy ou IDA ou uniform-cost
-snail: true
+algorithm: "A-star"            # Algorithme : A-star, greedy ou IDA ou uniform-cost
+snail: true                   # definit le type de puzzle true = snail, false = linear

@@ -3,7 +3,7 @@ import sys
 import cProfile
 import inspect
 from typing import List, Callable, Dict,Union, Set, Any, Tuple
-from heuristics import manhattan_distance,  hamming_distance, manhattan_metric, hamming_metric, linear_conflict_distance
+from heuristics import manhattan_distance,  hamming_distance, manhattan_metric, hamming_metric, linear_conflict_distance, dynamic_misplaced_heuristic
 from heuristics_util import get_and_filter_line, linear_conflict_on_multiple_lines
 from parser import is_solvable, is_linear_solvable
 from utils import display_puzzle
@@ -140,7 +140,9 @@ def get_heuristic_function(heuristic_name: str):
         elif heuristic_name == "hamming":
             return hamming_distance
         elif heuristic_name == "linear_conflict":
-            return linear_conflict_distance #modified
+            return linear_conflict_distance
+        elif heuristic_name == "dynamic_misplace":
+            return dynamic_misplaced_heuristic
         else:
             raise ValueError("Heuristic not supported")
     except ValueError as e:
